@@ -1,32 +1,132 @@
-# Prerequisites
-*.d
+#include <iostream>
+#include <string> // строки
+#include <fstream> // файлы
+using namespace std;
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+// 9 вариант
 
-# Precompiled Headers
-*.gch
-*.pch
+// данныe о планшетных сканерах 
+struct scan_info {
+	string model; // наименование модели
+	int price; // цена
+	double x_size; // горизонтальный размер области сканирования
+	double y_size; // вертикальный размер области сканирования
+	int optr; // оптическое разрешение
+	int grey; // число градаций серого
+};
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+// заполнение массива
+scan_info* fillArr(scan_info* arr, int col, long *col_rec) {
+	for (int i = 0; i < col; i++) {
+	cout << "Наименование модели: ";
+	cin.ignore();
+	getline(cin, arr[i].model);
 
-# Fortran module files
-*.mod
-*.smod
+	cout << "Цена: ";
+	cin >> arr[i].price;
 
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
+	while (!cin || (arr[i].price <= 0)) {
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cout << "Неверное значение! Введите корректные данные: ";
+		cin >> arr[i].price;
+	}
 
-# Executables
-*.exe
-*.out
-*.app
+	if (arr[i].price >= 200) (*col_rec)++;
+
+	cout << "Горизонтальный размер области сканирования: ";
+	cin >> arr[i].x_size;
+
+	while (!cin || (arr[i].x_size <= 0)) {
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cout << "Неверное значение! Введите корректные данные: ";
+		cin >> arr[i].x_size;
+	}
+
+	cout << "Вертикальный размер области сканирования: ";
+	cin >> arr[i].y_size;
+
+	while (!cin || (arr[i].y_size <= 0)) {
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cout << "Неверное значение! Введите корректные данные: ";
+		cin >> arr[i].y_size;
+	}
+
+	cout << "Оптическое разрешение: ";
+	cin >> arr[i].optr;
+
+	while (!cin || (arr[i].optr <= 0)) {
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cout << "Неверное значение! Введите корректные данные: ";
+		cin >> arr[i].optr;
+	}
+
+	cout << "Число градаций серого: ";
+	cin >> arr[i].grey;
+
+	while (!cin || (arr[i].grey <= 0)) {
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cout << "Неверное значение! Введите корректные данные: ";
+		cin >> arr[i].grey;
+	}
+	}
+	return arr;
+}
+
+// проверка заглавной буквы
+bool firstUpper(const string& word) { return word.size() && isupper(word[0]); }
+
+int main() {
+	setlocale(LC_ALL, "rus");
+	ofstream fout;
+	int col;
+
+	cout << "Введите количество сканеров: ";
+	cin >> col;
+	while (!cin||(col <=0)) {
+		cin.clear();
+		cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		cout << "Неверное значение! Введите корректные данные: ";
+		cin >> col;
+	}
+
+	scan_info *arr = new scan_info[col];
+	long col_rec = 0;
+	arr = fillArr(arr, col, &col_rec);
+
+	fout.open("info.txt");
+	if (!fout.is_open()) {
+		cout << "Ошибка при открытии файла! " << endl;
+	}
+	else {
+		fout << col_rec;
+		for (int i = 0; i < col; i++) {
+			if ((!firstUpper(arr[i].model)) && (arr[i].price >= 200)) {
+				fout << arr[i].model;
+				fout << arr[i].price;
+				fout << arr[i].x_size;
+				fout << arr[i].y_size;
+				fout << arr[i].optr;
+				fout << arr[i].grey;
+			}
+
+		}
+		for (int i = 0; i < col; i++) {
+			if ((firstUpper(arr[i].model)) && (arr[i].price >= 200)) {
+				fout << arr[i].model;
+				fout << arr[i].price;
+				fout << arr[i].x_size;
+				fout << arr[i].y_size;
+				fout << arr[i].optr;
+				fout << arr[i].grey;
+			}
+		}
+		cout << "Файл заполнен! \n";
+	}
+	fout.close();
+	return 0;
+}
